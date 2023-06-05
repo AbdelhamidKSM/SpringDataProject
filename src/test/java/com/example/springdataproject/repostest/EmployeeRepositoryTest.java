@@ -7,6 +7,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.util.List;
+
 import static com.example.springdataproject.entities.SpecialEmployee.SenioritySecondLevel.SENIOR;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -85,7 +87,9 @@ class EmployeeRepositoryTest {
 
     }
 
-
+    /**
+     * working with this entity will help us to understand the relationships between all the tables in this case we are using special Employee
+     */
     @Test
      void test_save_Special_Employee() {
         // Create a Special Employee
@@ -136,6 +140,44 @@ class EmployeeRepositoryTest {
         // Assertions with profile
         SpecialEmployee specialEmployeeByProfile = specialEmployeeRepository.findSpecialEmployeeByProfileContainingIgnoreCase("arch");
         assertEquals(specialEmployeeByProfile.getSeniority(), specialEmployee.getSeniority());
+    }
+    /**
+     * working with Queries
+     */
+    @Test
+     void sqlQueries_test (){
+        SpecialEmployee  specialEmployee = SpecialEmployee.builder()
+                .profile("Java Architecture")
+                .tjm(3000D)
+                .seniority(SENIOR)
+                .build();
+
+        Contact contact = Contact.builder()
+                .name("Mohammed ")
+                .email("Mohammed@gmail.com")
+                .mobile("0643333554")
+                .build();
+
+        Departement departement = Departement.builder()
+                .name("IT")
+                .build();
+
+        specialEmployee.setContact(contact);
+        specialEmployee.setDepartement(departement);
+        specialEmployeeRepository.save(specialEmployee);
+
+
+        List<SpecialEmployee> tjmByEmail = specialEmployeeRepository.findSpecialEmployeesByProfile(specialEmployee.getProfile());
+        Long specialEmployeesByProfile = specialEmployeeRepository.countSpecialEmployeeByProfileLike(specialEmployee.getProfile());
+        List<SpecialEmployee> specialEmployeesByTjmRange = specialEmployeeRepository.findSpecialEmployeeByTjmRange(2700D ,3100D);
+        List<SpecialEmployee> specialEmployeesByDepartmentName= specialEmployeeRepository.findSpecialEmployeesByDepartmentName("IT");
+
+        // assertions
+        assertNotNull(tjmByEmail);
+        assertNotNull(specialEmployeesByProfile);
+        assertNotNull(specialEmployeesByTjmRange);
+        assertNotNull(specialEmployeesByDepartmentName);
+
 
     }
 
