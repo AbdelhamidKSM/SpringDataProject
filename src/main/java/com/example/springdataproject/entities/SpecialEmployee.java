@@ -12,11 +12,11 @@ import lombok.*;
 @Setter
 @Builder
 public class SpecialEmployee extends Employee {
-    public enum  seniority {EXPERT,SENIOR }
+    public enum SenioritySecondLevel {EXPERT,SENIOR }
 
     @Enumerated (EnumType.STRING)
     @Column(name = "seniority" ,nullable = false)
-    public StandardEmployee.Seniority seniority ;
+    public SenioritySecondLevel seniority ;
 
 
     @Column(name = "profile" ,nullable = false)

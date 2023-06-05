@@ -13,11 +13,11 @@ import lombok.*;
 @Builder
 public class StandardEmployee  extends Employee{
 
-    public enum Seniority {OPERATOR,JUNIOR}
+    public enum SeniorityFirstLevel {OPERATOR,JUNIOR}
 
     @Enumerated (EnumType.STRING)
     @Column(name = "seniority" ,nullable = false)
-    public Seniority seniority ;
+    public SeniorityFirstLevel seniority ;
 
 
     @Column(name = "profile" ,nullable = false)

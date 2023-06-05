@@ -1,12 +1,14 @@
 package com.example.springdataproject.repostest;
 
 import com.example.springdataproject.entities.*;
+import com.example.springdataproject.entities.StandardEmployee.SeniorityFirstLevel;
 import com.example.springdataproject.repos.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static com.example.springdataproject.entities.SpecialEmployee.SenioritySecondLevel.SENIOR;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 class EmployeeRepositoryTest {
@@ -26,42 +28,115 @@ class EmployeeRepositoryTest {
     private StandardEmployeeRepository standardEmployeeRepository;
 
 
-
+    /**
+     * working with this entity will help us to understand the relationships between all the tables
+     */
     @Test
-    void test_save() {
+    void test_save_StandardEmployee() {
+
+        // create a standard employee using the builder
+        StandardEmployee standardEmployee = StandardEmployee.builder()
+                .profile("Accountant")
+                .seniority(SeniorityFirstLevel.OPERATOR)
+                .salary(10_000D)
+                .build();
+
+
         Contact contact = Contact.builder()
-                .name("Ahmed")
-                .email("Ahmed@gmail.com")
-                .mobile("06454545454")
+                .name("Rachid")
+                .email("rachid@gmail.com")
+                .mobile("06433335454")
                 .build();
 
         Country country = Country.builder()
-                .name("Morroco")
+                .name("Qatar")
                 .build();
-        countryRepository.save(country);
 
         Departement departement = Departement.builder()
-                .name("IT")
+                .name("Finance")
                 .build();
-        departementRepository.save(departement);
-        Employee employee = new Employee();
-        employee.setContact(contact);
-//        employee.setDepartement(departement);
+        departement.setCountry(country);
 
-        employeeRepository.save(employee);
+
+        standardEmployee.setContact(contact);
+        standardEmployee.setDepartement(departement);
 
         Folder folder = Folder.builder()
-                .acessType("read")
-//                .employee(employee)
+                .acessType("read/write")
+                .employee(standardEmployee)
                 .build();
+        standardEmployee.setFolder(folder);
+
         folderRepository.save(folder);
 
-        // print all the employees
-        employeeRepository.findAll().forEach(employee1 -> System.out.println("here is the student########## " + employee1.getContact().getName()));
-        folderRepository.findAll().forEach(folder1 -> System.out.println("here is the Acces Type########## " + folder1.getAcessType()));
-        departementRepository.findAll().forEach(departement1 -> System.out.println("here is the name of departement ########## " + departement1.getName()));
-//        countryRepository.findAll().forEach(country1 -> System.out.println("here is the student########## " + country1.getName() + country1.getDepartements()));
-
+        // Assertions with contact
         assertNotNull(employeeRepository.findAll());
+        StandardEmployee standardEmployeeByContact = standardEmployeeRepository.findStandardEmployeeByContact(contact);
+        assertEquals(standardEmployeeByContact.getId(), standardEmployee.getId());
+
+        StandardEmployee employeeFirstByContact = standardEmployeeRepository.findFirstByContact(contact);
+        assertEquals(employeeFirstByContact.getContact().getName(), contact.getName());
+
+        StandardEmployee endingWithEmployee = standardEmployeeRepository.findStandardEmployeeByContactAndFolder(standardEmployee.getContact(), standardEmployee.getFolder());
+        assertNotNull(endingWithEmployee);
+        // Assertions with profile
+        StandardEmployee standardEmployeeByProfile = standardEmployeeRepository.findStandardEmployeeByProfileContainingIgnoreCase("acc");
+        assertEquals(standardEmployeeByProfile.getSeniority(), standardEmployee.getSeniority());
+
     }
+
+
+    @Test
+     void test_save_Special_Employee() {
+        // Create a Special Employee
+        SpecialEmployee  specialEmployee = SpecialEmployee.builder()
+                .profile("Java Architecture")
+                .tjm(3000D)
+                .seniority(SENIOR)
+                .build();
+
+        Contact contact = Contact.builder()
+                .name("Mohammed ")
+                .email("Mohammed@gmail.com")
+                .mobile("0643333554")
+                .build();
+
+        Country country = Country.builder()
+                .name("Egypt")
+                .build();
+
+        Departement departement = Departement.builder()
+                .name("Management")
+                .build();
+        departement.setCountry(country);
+
+
+        specialEmployee.setContact(contact);
+        specialEmployee.setDepartement(departement);
+
+        Folder folder = Folder.builder()
+                .acessType("Full Control")
+                .employee(specialEmployee)
+                .build();
+        specialEmployee.setFolder(folder);
+
+        folderRepository.save(folder);
+
+        // Assertions with contact
+        assertNotNull(employeeRepository.findAll());
+        SpecialEmployee specialEmployeeByContact = specialEmployeeRepository.findSpecialEmployeeByContact(contact);
+
+        assertEquals(specialEmployeeByContact.getId(), specialEmployee.getId());
+
+        SpecialEmployee employeeFirstByContact = specialEmployeeRepository.findFirstByContact(contact);
+        assertEquals(employeeFirstByContact.getContact().getName(), contact.getName());
+
+        SpecialEmployee endingWithEmployee = specialEmployeeRepository.findSpecialEmployeeByContactAndFolder(specialEmployee.getContact(), specialEmployee.getFolder());
+        assertNotNull(endingWithEmployee);
+        // Assertions with profile
+        SpecialEmployee specialEmployeeByProfile = specialEmployeeRepository.findSpecialEmployeeByProfileContainingIgnoreCase("arch");
+        assertEquals(specialEmployeeByProfile.getSeniority(), specialEmployee.getSeniority());
+
+    }
+
 }
