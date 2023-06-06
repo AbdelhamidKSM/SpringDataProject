@@ -27,7 +27,7 @@ public interface SpecialEmployeeRepository extends JpaRepository<SpecialEmployee
     Long countSpecialEmployeeByProfileLike (@Param("profile") String profile);
 
     @Query("SELECT se FROM SpecialEmployee  se WHERE se.tjm BETWEEN :minTjm AND :maxTjm ")
-    List<SpecialEmployee> findSpecialEmployeeByTjmRange (@Param("minTjm") Double minTjm , @Param("maxTjm") Double maxTjm  );
+    List<SpecialEmployee> findSpecialEmployeeByTjmRange (@Param("minTjm") Double minTjm , @Param("maxTjm") Double maxTjm );
 
     @Query("Select se From SpecialEmployee  se where se.departement.name =:depName ")
     List<SpecialEmployee> findSpecialEmployeesByDepartmentName (@Param("depName") String depName);

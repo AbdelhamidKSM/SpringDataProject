@@ -27,4 +27,7 @@ public interface StandardEmployeeRepository extends JpaRepository<StandardEmploy
 
     @Query(value ="SELECT MAX (salary) from standard_employee" , nativeQuery = true)
     Double findMaxSalary ();
+
+
+
 }

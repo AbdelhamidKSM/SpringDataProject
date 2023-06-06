@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -216,6 +217,49 @@ class EmployeeRepositoryTest {
         assertNotNull(employeesCountry);
         assertNotNull(maxSalary);
 
+    }
+
+    // work with @Transactional and @Modifying
+
+    @Test
+    void test_Data_Modification_Operators (){
+        // create a Standard Employee
+        StandardEmployee  standardEmployee = StandardEmployee.builder()
+                .profile("Java Senior")
+                .salary(150000D)
+                .seniority(SeniorityFirstLevel.JUNIOR)
+                .build();
+
+        Contact standardContact = Contact.builder()
+                .name("Mohammed ")
+                .email("Mohammed@gmail.com")
+                .mobile("0643333554")
+                .build();
+
+        Departement stdDepartement = Departement.builder()
+                .name("commerce")
+                .build();
+
+        // saving employees
+        standardEmployee.setContact(standardContact);
+        standardEmployee.setDepartement(stdDepartement);
+
+        employeeRepository.save(standardEmployee);
+
+        /*  modification operators (Update & Delete )  */
+         // this the department that we want to change
+        Departement changedDepartement = Departement.builder()
+                .name("Finance")
+                .build();
+        departementRepository.save(changedDepartement);
+        employeeRepository.updateEmployeeDepartment(standardEmployee.getId(),changedDepartement);
+
+        // assertions
+        assertEquals(departementRepository.findById(changedDepartement.getId()).orElseThrow().getId() ,employeeRepository.findFirstById(standardEmployee.getId()).getDepartement().getId());
+
+        // working on delete case
+        int deletedRows = employeeRepository.deleteEmployeesByDepartement(changedDepartement);
+        assertNotEquals(0 , deletedRows );
 
     }
 
