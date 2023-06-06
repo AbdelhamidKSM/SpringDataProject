@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.example.springdataproject.entities.SpecialEmployee.SenioritySecondLevel.SENIOR;
 import static org.junit.jupiter.api.Assertions.*;
@@ -176,6 +178,14 @@ class EmployeeRepositoryTest {
                 .email("Mohammed@gmail.com")
                 .mobile("0643333554")
                 .build();
+
+        Departement stdDepartement = Departement.builder()
+                .name("commerce")
+                .build();
+        Country country = Country.builder()
+                .name("China")
+                .departements(Stream.of(stdDepartement,departement).collect(Collectors.toSet()))
+                .build();
         // saving employees
         specialEmployee.setContact(specialContact);
         specialEmployee.setDepartement(departement);
@@ -193,6 +203,8 @@ class EmployeeRepositoryTest {
         // Assertions StandardEmployee
         List<StandardEmployee> standardEmployeesByProfile = standardEmployeeRepository.findByProfile(standardEmployee.getProfile());
         List<StandardEmployee> standardEmployeesByEmailAndProfile = standardEmployeeRepository.findByEmailAndProfile( specialEmployee.getContact().getEmail(),standardEmployee.getProfile());
+        List<Employee> employeesCountry = employeeRepository.findEmployeesByCountry(country.getName());
+        Double maxSalary = standardEmployeeRepository.findMaxSalary();
 
         // assertions
         assertNotNull(tjmByEmail);
@@ -201,6 +213,8 @@ class EmployeeRepositoryTest {
         assertNotNull(specialEmployeesByDepartmentName);
         assertNotNull(standardEmployeesByProfile);
         assertNotNull(standardEmployeesByEmailAndProfile);
+        assertNotNull(employeesCountry);
+        assertNotNull(maxSalary);
 
 
     }

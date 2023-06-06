@@ -24,4 +24,7 @@ public interface StandardEmployeeRepository extends JpaRepository<StandardEmploy
 
     @Query("SELECT ste FROM StandardEmployee ste WHERE ste.profile LIKE %:profile% and  ste.contact.email=:email")
     List<StandardEmployee> findByEmailAndProfile (@Param("email") String email , @Param("profile") String profile);
+
+    @Query(value ="SELECT MAX (salary) from standard_employee" , nativeQuery = true)
+    Double findMaxSalary ();
 }
