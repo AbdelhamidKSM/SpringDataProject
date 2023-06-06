@@ -146,13 +146,14 @@ class EmployeeRepositoryTest {
      */
     @Test
      void sqlQueries_test (){
+        // create a special employee
         SpecialEmployee  specialEmployee = SpecialEmployee.builder()
                 .profile("Java Architecture")
                 .tjm(3000D)
                 .seniority(SENIOR)
                 .build();
 
-        Contact contact = Contact.builder()
+        Contact specialContact = Contact.builder()
                 .name("Mohammed ")
                 .email("Mohammed@gmail.com")
                 .mobile("0643333554")
@@ -162,21 +163,44 @@ class EmployeeRepositoryTest {
                 .name("IT")
                 .build();
 
-        specialEmployee.setContact(contact);
+        // create a Standard Employee
+
+        StandardEmployee  standardEmployee = StandardEmployee.builder()
+                .profile("Java Senior")
+                .salary(150000D)
+                .seniority(SeniorityFirstLevel.JUNIOR)
+                .build();
+
+        Contact standardContact = Contact.builder()
+                .name("Mohammed ")
+                .email("Mohammed@gmail.com")
+                .mobile("0643333554")
+                .build();
+        // saving employees
+        specialEmployee.setContact(specialContact);
         specialEmployee.setDepartement(departement);
+        standardEmployee.setContact(standardContact);
+
         specialEmployeeRepository.save(specialEmployee);
+        standardEmployeeRepository.save(standardEmployee);
 
-
+        // Assertion SpecialEmployee
         List<SpecialEmployee> tjmByEmail = specialEmployeeRepository.findSpecialEmployeesByProfile(specialEmployee.getProfile());
         Long specialEmployeesByProfile = specialEmployeeRepository.countSpecialEmployeeByProfileLike(specialEmployee.getProfile());
         List<SpecialEmployee> specialEmployeesByTjmRange = specialEmployeeRepository.findSpecialEmployeeByTjmRange(2700D ,3100D);
         List<SpecialEmployee> specialEmployeesByDepartmentName= specialEmployeeRepository.findSpecialEmployeesByDepartmentName("IT");
+
+        // Assertions StandardEmployee
+        List<StandardEmployee> standardEmployeesByProfile = standardEmployeeRepository.findByProfile(standardEmployee.getProfile());
+        List<StandardEmployee> standardEmployeesByEmailAndProfile = standardEmployeeRepository.findByEmailAndProfile( specialEmployee.getContact().getEmail(),standardEmployee.getProfile());
 
         // assertions
         assertNotNull(tjmByEmail);
         assertNotNull(specialEmployeesByProfile);
         assertNotNull(specialEmployeesByTjmRange);
         assertNotNull(specialEmployeesByDepartmentName);
+        assertNotNull(standardEmployeesByProfile);
+        assertNotNull(standardEmployeesByEmailAndProfile);
 
 
     }
