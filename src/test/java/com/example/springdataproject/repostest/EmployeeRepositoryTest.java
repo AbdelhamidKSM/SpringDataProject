@@ -6,8 +6,11 @@ import com.example.springdataproject.repos.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -23,8 +26,7 @@ class EmployeeRepositoryTest {
     private EmployeeRepository employeeRepository;
     @Autowired
     private DepartementRepository departementRepository;
-    @Autowired
-    private CountryRepository countryRepository;
+
     @Autowired
     private FolderRepository folderRepository;
     @Autowired
@@ -262,5 +264,25 @@ class EmployeeRepositoryTest {
         assertNotEquals(0 , deletedRows );
 
     }
+
+
+    // Pagination and sorting
+
+    @Test
+     void test_PaginationAndSorting (){
+        int pageNumber =0;
+        int sizeNumber =4;
+        Sort sort =Sort.by("contact.name").ascending();
+
+        Pageable pageable = PageRequest.of(pageNumber , sizeNumber ,sort);
+
+        Page<Employee> employeePage = employeeRepository.findAll(pageable);
+
+        List<Employee> employees = employeePage.getContent();
+
+        assertEquals(pageNumber , employees.size());
+
+    }
+
 
 }

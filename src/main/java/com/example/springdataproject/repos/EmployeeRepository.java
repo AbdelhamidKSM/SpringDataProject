@@ -32,4 +32,6 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
     @Query ("DELETE  from  Employee  e where  e.departement=:dpt")
     int deleteEmployeesByDepartement(@Param("dpt") Departement dpt);
 
+    // pagination and sorting
+
 }
